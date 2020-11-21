@@ -1,0 +1,251 @@
+.div-load-page p {
+    margin: 0 0 0.8em 0;
+}
+
+.bg {
+    padding: 0.5em;
+}
+
+.loader-svg {
+    width: 18px;
+    position: relative;
+    top: 0px;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+    height: 2em !important;
+}
+
+.select2-selection--single {
+    height: 2.8em !important;
+}
+
+.select2-selection__rendered {
+    padding-top: 0.3em !important;
+}
+
+.td-action {
+    text-align: center;
+}
+
+.td-action span {
+    margin-right: 0.4em;
+}
+
+.td-action span a {
+    color: #fff;
+}
+
+.bg-data {
+    margin-right: 0.3em;
+    border: 1px solid;
+}
+
+.bg-data a {
+    padding: 2px;
+}
+
+.bg-data:hover > .fa-pen:hover {
+    color: #ffc107;
+}
+
+.bg-data:hover > .fa-trash:hover {
+    color: #dc3545;
+}
+
+.page-search, .page-load {
+    /* to all page */
+    /*position: fixed;
+    background-color: rgba(255, 255, 255, 0.95);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 999999;
+    overflow-x: hidden;
+    overflow-y: auto;*/
+    position: fixed;
+    display: none;
+    z-index: 1000;
+    bottom: 0;
+    right: 0;
+    width: 94.8%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.div-search-close {
+    display: none;
+}
+
+.icon-search-close {
+    display: block;
+    margin-left: 0.5em;
+    cursor: pointer;
+    color: rgba(0, 0, 0, .5);
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/*.page-search .page-search-close, .page-load .page-load-close {
+    display: block;
+    width: 40px;
+    height: 40px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 28px;
+    color: #262626;
+    border: 1px solid;
+    position: absolute;
+    top: 3.13em;
+    right: 13.5em;
+    cursor: pointer;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.page-search .page-search-close:hover, .page-load .page-load-close:hover {
+    color: #959dae;
+}*/
+
+.page-search .tb, .page-load .tb {
+    height: 100%;
+}
+
+.page-search .tb-cell, .page-load .tb-cell {
+    width: 90%;
+    margin: 7em auto;
+}
+
+.page-load .tb-cell img {
+    position: absolute;
+    bottom: 50%;
+    right: 50%;
+}
+
+.page-search .tb-cell form {
+    width: 90%;
+    max-width: 1280px;
+    margin: 5em auto;
+}
+
+.page-search .tb-cell input {
+    background: none;
+    border: 0;
+    border-bottom: 1px solid;
+    font-size: 2em;
+    padding: 0;
+    line-height: 2em;
+    height: auto;
+    width: 50%;
+    color: #262626;
+    letter-spacing: 0.05em;
+}
+
+.search-result {
+    position: relative;
+    right: 1.5em;
+}
+
+.col-search-data {
+    margin: 0 0 1em 0;
+    border-left: 0.3em solid #333;
+}
+
+/* .col-search-data:nth-child(odd) { 
+    background-color: #ccc;
+} */
+
+.div-time {
+    display: -webkit-flex;
+    display: flex;
+    margin-bottom: 1.5em;
+}
+
+.div-time-left {
+    -webkit-flex: 1;
+    flex: 1;
+    padding: 5px;
+    background-color: #eee;
+}
+
+.div-time-left a {
+    position: relative;
+    top: 2px;
+}
+
+.div-time-center {
+    -webkit-flex: 10;
+    flex: 10;
+    padding: 5px;
+    background-color: #ddd;
+}
+
+.div-time-center p {
+	margin: 0;
+    padding: 0;
+}
+
+.div-time-right {
+    -webkit-flex: 1;
+    flex: 1;
+    padding: 5px;
+    background-color: #eee;
+}
+
+.div-time-right a {
+    position: relative;
+    top: 2px;
+}
+
+.uploadifive-queue {
+    width: auto;
+    height: auto;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
+.anexo div {
+    margin-bottom: 0.19em;
+    background-color: #eee;
+    height: 57px;
+}
+
+.anexo div img {
+    position: relative;
+    top: 0.14em;
+    left: 0.5em;
+    width: 5em;
+}
+
+.anexo div a {
+    position: relative;
+    top: 0.5em;
+    left: 0.5em;
+}
+
+.anexo div span {
+    position: relative;
+    top: 0.5em;
+    left: 0.5em;
+}
+
+.anexo div span em {
+    position: relative;
+    left: 0.5em;
+    bottom: 0.5em;
+}
+
+.anexo-action {
+    float: right;
+    margin: 1em 1em 0 0;
+}
