@@ -220,29 +220,22 @@
     height: 57px;
 }
 
-.anexo div img {
-    position: relative;
-    top: 0.14em;
-    left: 0.5em;
-    width: 5em;
-}
-
-.anexo div a {
-    position: relative;
-    top: 0.5em;
-    left: 0.5em;
-}
-
 .anexo div span {
     position: relative;
     top: 0.5em;
     left: 0.5em;
 }
 
-.anexo div span em {
+.anexo img {
     position: relative;
+    bottom: 0.35em;
+    width: 5em;
+}
+
+.anexo em {
+    position: relative;
+    bottom: 0.75em;
     left: 0.5em;
-    bottom: 0.5em;
 }
 
 .anexo-action {

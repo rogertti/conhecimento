@@ -10,7 +10,6 @@
     require_once 'appConfig.php';
     include_once 'api/config/database.php';
     include_once 'api/objects/comando.php';
-    include_once 'api/objects/sistema.php';
     include_once 'api/objects/arquivo.php';
 
     // functionals functions
@@ -75,132 +74,121 @@
     // prepare objects
 
     $comando = new Comando($db);
-    $sistema = new Sistema($db);
     $arquivo = new Arquivo($db);
 
     // GET variables
 
     $py_idcomando = md5('idcomando');
 
-    $sql = $comando->readSingle($_GET[''.$py_idcomando.'']);
+    $sql = $arquivo->readForCommand($_GET[''.$py_idcomando.'']);
 
         if ($sql->rowCount() > 0) {
-            #while($row = $sql->fetch(PDO::FETCH_OBJ)) {}
-            $row = $sql->fetch(PDO::FETCH_OBJ);
+            $dir = 'anexo/';
 ?>
-<form class="form-edit-comando">
+<form class="form-new-arquivo">
     <div class="modal-header">
         <h4 class="modal-title">
-            <span>Editar Conhecimento</span>
-            <span class="text-muted">
-            <small>(<i class="fas fa-bell"></i> Campo obrigat&oacute;rio)</small>
-            </span>
+            <span>Anexos do Conhecimento</span>
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
     <div class="modal-body">
-        <input type="hidden" name="rand" id="rand_edit" value="<?php echo md5(mt_rand()); ?>">
-        <input type="hidden" name="idcomando" id="idcomando" value="<?php echo $_GET[''.$py_idcomando.'']; ?>">
+        <input type="hidden" name="rand" id="rand_" value="<?php echo md5(mt_rand()); ?>">
+        <input type="hidden" name="idcomando" id="idcomando_" value="<?php echo $_GET[''.$py_idcomando.'']; ?>">
 
-        <div class="form-group">
-            <label for="sistema"><i class="fas fa-bell"></i> Sistema</label>
-            <select name="sistema" id="sistema_edit" class="form-control"
-                data-placeholder="Encontre ou informe o sistema destino" style="width: 100%;" required>
-            <?php
-                $sql2 = $sistema->readAll();
-
-                    if ($sql2->rowCount() > 0) {
-                        while ($row2 = $sql2->fetch(PDO::FETCH_OBJ)) {
-                            if ($row2->idsistema == $row->idsistema) {
-                                echo'<option value="'.$row2->idsistema.'" selected>'.$row2->sistema.'</option>';
-                            } else {
-                                echo'<option value="'.$row2->idsistema.'">'.$row2->sistema.'</option>';
-                            }
-                        }
-                    }
-            ?>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="descricao"><i class="fas fa-bell"></i> Descri&ccedil;&atilde;o</label>
-            <input type="text" name="descricao" id="descricao_edit" maxlength="100"
-                value="<?php echo $row->descricao; ?>" class="form-control" placeholder="Descri&ccedil;&atilde;o" required>
-        </div>
-        <div class="form-group">
-            <label for="instrucao"><i class="fas fa-bell"></i> Comando</label>
-            <textarea name="instrucao" id="instrucao_edit" rows="3" class="form-control"
-                placeholder="Instru&ccedil;&atilde;o" required><?php echo $row->instrucao; ?></textarea>
-        </div>
         <div class="form-group">
             <label for="anexo">Anexo</label>
-            <input type="file" name="anexo[]" id="anexo_edit" class="form-control" placeholder="Anexe arquivos ao conhecimento" multiple>
+            <input type="file" name="anexo[]" id="anexo_" class="form-control" placeholder="Anexe arquivos ao conhecimento" multiple required>
         </div>
         <div class="anexo">
         <?php
-            $sql2 = $arquivo->readForCommand($row->idcomando);
+            while ($row = $sql->fetch(PDO::FETCH_OBJ)) {
+                $extensao = strrchr($row->link, '.');
+                $extensao = substr($extensao, 1);
 
-                if ($sql2->rowCount() > 0) {
-                    $dir = 'anexo/';
-
-                        while ($row2 = $sql2->fetch(PDO::FETCH_OBJ)) {
-                            $extensao = strrchr($row2->link, '.');
-                            $extensao = substr($extensao, 1);
-
-                                if (checkImageExtension($extensao)) {
-                                    echo'
-                                    <div>
-                                        <span><a href="' . $dir . $row2->link . '" data-toggle="lightbox"><img src="' . $dir . $row2->link . '" alt="anexo"></a></span>
-                                        <p class="anexo-action">
-                                            <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row2->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
-                                        </p>
-                                    </div>';
-                                } elseif (checkCompactExtension($extensao)) {
-                                    echo'
-                                    <div>
-                                        <span><i class="fas fa-3x fa-file-archive text-muted"></i> <em><a href="' . $dir . $row2->link . '">' . $row2->link . '</a></em></span>
-                                        <p class="anexo-action">
-                                            <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row2->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
-                                        </p>
-                                    </div>';
-                                } elseif ($fa = checkFileExtension($extensao)) {
-                                    if ($fa == 'pdf') {
-                                        echo'
-                                        <div>
-                                            <span><i class="fas fa-3x fa-file-pdf text-muted"></i> <em><a class="a-view-document" href="' . $dir . $row2->link . '">' . $row2->link . '</a></em></span>
-                                            <p class="anexo-action">
-                                                <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row2->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
-                                            </p>
-                                        </div>';
-                                    } else {
-                                        echo'
-                                        <div>
-                                            <span>' . $fa . ' <em><a href="' . $dir . $row2->link . '">' . $row2->link . '</a></em></span>
-                                            <p class="anexo-action">
-                                                <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row2->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
-                                            </p>
-                                        </div>';
-                                    }
-                                } else {
-                                    echo'
-                                    <div>
-                                        <span><i class="fas fa-3x fa-shapes text-muted"></i> <em>' . $row2->link . '</em></span>
-                                        <p class="anexo-action">
-                                            <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row2->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
-                                        </p>
-                                    </div>';
-                                }
+                    if (checkImageExtension($extensao)) {
+                        echo'
+                        <div>
+                            <span><a href="' . $dir . $row->link . '" data-toggle="lightbox"><img src="' . $dir . $row->link . '" alt="anexo"></a></span>
+                            <p class="anexo-action">
+                                <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
+                            </p>
+                        </div>';
+                    } elseif (checkCompactExtension($extensao)) {
+                        echo'
+                        <div>
+                            <span><i class="fas fa-3x fa-file-archive text-muted"></i> <em><a href="' . $dir . $row->link . '">' . $row->link . '</a></em></span>
+                            <p class="anexo-action">
+                                <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
+                            </p>
+                        </div>';
+                    } elseif ($fa = checkFileExtension($extensao)) {
+                        if ($fa == 'pdf') {
+                            echo'
+                            <div>
+                                <span><i class="fas fa-3x fa-file-pdf text-muted"></i> <em><a class="a-view-document" href="' . $dir . $row->link . '">' . $row->link . '</a></em></span>
+                                <p class="anexo-action">
+                                    <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
+                                </p>
+                            </div>';
+                        } else {
+                            echo'
+                            <div>
+                                <span>' . $fa . ' <em><a href="' . $dir . $row->link . '">' . $row->link . '</a></em></span>
+                                <p class="anexo-action">
+                                    <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
+                                </p>
+                            </div>';
                         }
-                }
+                    } else {
+                        echo'
+                        <div>
+                            <span><i class="fas fa-3x fa-shapes text-muted"></i> <em>' . $row->link . '</em></span>
+                            <p class="anexo-action">
+                                <a class="a-delete-arquivo" id="c87da4b82210d84b55cce6bc0e64e3de-'.$row->idarquivo.'" href="#" title="Excluir anexo"><i class="fa fa-trash text-danger"></i></a>
+                            </p>
+                        </div>';
+                    }
+            }
         ?>
         </div>
     </div>
     <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-        <button type="submit" class="btn btn-primary btn-edit-comando">Salvar</button>
+        <button type="submit" class="btn btn-primary btn-new-arquivo">Subir</button>
     </div>
 </form>
+<?php
+        } else {
+?>
+<form class="form-new-arquivo">
+    <div class="modal-header">
+        <h4 class="modal-title">
+            <span>Anexos do Conhecimento</span>
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" name="rand" id="rand_" value="<?php echo md5(mt_rand()); ?>">
+        <input type="hidden" name="idcomando" id="idcomando_" value="<?php echo $_GET[''.$py_idcomando.'']; ?>">
+
+        <div class="form-group">
+            <label for="anexo">Anexo</label>
+            <input type="file" name="anexo[]" id="anexo_" class="form-control" placeholder="Anexe arquivos ao conhecimento" multiple required>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+        <button type="submit" class="btn btn-primary btn-new-arquivo">Subir</button>
+    </div>
+</form>
+<?php
+        }
+?>
 <script defer>
     $(document).ready(function() {
         const fade = 150,
@@ -219,23 +207,10 @@
         $('div a, td span a, span a, div p a, p a').tooltip({
             boundary: 'window'
         });
-        
-        /* SELECT MULTIPLE */
-
-        $('#sistema_edit').show(function() {
-            $('#sistema_edit').select2({
-                tags: true,
-                language: {
-                    noResults: function () {
-                        return 'No campo acima é possível criar um novo sistema.';
-                    }
-                }
-            });
-        });
 
         /* UPLOAD */
 
-        $('#anexo_edit').on('change', function(e) {
+        $('#anexo_').on('change', function(e) {
             e.preventDefault();
 
                 for (let i = 0; i < this.files.length; i++) {
@@ -263,14 +238,16 @@
 
         /* NOVO CONHECIMENTO */
 
-        $('.form-edit-comando').submit(function(e) {
+        $('.form-new-arquivo').submit(function(e) {
             e.preventDefault();
 
-            let formdata = new FormData(this);
+            let target = $('.a-view-arquivo').attr('href'),
+                formdata = new FormData(this);
+
             formdata.append('anexo', filelist);
 
             $.ajax({
-                url: 'api/comando/update.php',
+                url: 'api/arquivo/insert.php',
                 type: 'POST',
                 cache: false,
                 data: formdata,
@@ -281,9 +258,10 @@
                         case 'true':
                             Toast.fire({
                                 icon: 'success',
-                                title: 'Conhecimento editado.'
+                                title: 'Anexo adicionado.'
                             }).then((result) => {
-                                window.setTimeout("location.href='inicio'", delay);
+                                //window.setTimeout("location.href='inicio'", delay);
+                                $('#modal-view-arquivo .modal-content').load(target);
                             });
                             break;
 
@@ -311,7 +289,7 @@
         $('.anexo').on('click', '.a-delete-arquivo', function(e) {
             e.preventDefault();
 
-            let target = $('.a-edit-comando').attr('href'),
+            let target = $('.a-view-arquivo').attr('href'),
                 click = this.id.split('-'),
                 py = click[0],
                 id = click[1];
@@ -347,10 +325,7 @@
                                     icon: 'success',
                                     title: 'Arquivo exclu&iacute;do.'
                                 }).then((result) => {
-                                    //window.setTimeout("location.href='inicio'", delay);
-                                    // load the url and show modal on success
-
-                                    $('#modal-edit-comando .modal-content').load(target);
+                                    $('#modal-view-arquivo .modal-content').load(target);
                                 });
                             }
                         }
@@ -359,12 +334,4 @@
             });
         });
     });
-<?php
-        } else {
-            echo'
-            <blockquote class="quote-danger">
-                <h5>Erro</h5>
-                <p>O conhecimento n&atilde;o foi encontrado.</p>
-            </blockquote>';
-        }
-?>
+</script>

@@ -3,6 +3,7 @@
 
     include_once '../config/database.php';
     include_once '../objects/comando.php';
+    include_once '../objects/arquivo.php';
      
     // get database connection
 
@@ -12,6 +13,7 @@
     // prepare object
 
     $comando = new Comando($db);
+    $arquivo = new Arquivo($db);
     
     // query instance
 
@@ -26,14 +28,28 @@
         
                 while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
                     extract($row);
-                        
-                    $comando_item = array(
-                            'status' => true,
-                            'idcomando' => $idcomando,
-                            'sistema' => $sistema,
-                            'descricao' => $descricao,
-                            'instrucao' => $instrucao,
-                        );
+
+                    $sql2 = $arquivo->readForCommand($idcomando);
+
+                        if ($sql2->rowCount() > 0) {
+                            $comando_item = array(
+                                'status' => true,
+                                'idcomando' => $idcomando,
+                                'sistema' => $sistema,
+                                'descricao' => $descricao,
+                                'instrucao' => $instrucao,
+                                'arquivo' => true
+                            );
+                        } else {
+                            $comando_item = array(
+                                'status' => true,
+                                'idcomando' => $idcomando,
+                                'sistema' => $sistema,
+                                'descricao' => $descricao,
+                                'instrucao' => $instrucao,
+                                'arquivo' => false
+                            );
+                        }
 
                     array_push($comando_arr['comando'], $comando_item);
                 }

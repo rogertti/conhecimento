@@ -29,7 +29,7 @@
             $sql = $this->conn->prepare("SELECT comando.idcomando,sistema.descricao AS sistema,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema ON comando.sistema_idsistema = sistema.idsistema WHERE comando.monitor = :monitor ORDER BY sistema.descricao,comando.descricao,comando.instrucao");
             $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
             $sql->execute();
-
+                
             return $sql;
         }
 

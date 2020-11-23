@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="plugins/ekko-lightbox/ekko-lightbox.min.css">
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
     <link rel="stylesheet" href="dist/css/main.css">
 </head>
@@ -215,6 +216,8 @@
     <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
     <script src="plugins/select2/js/select2.full.min.js"></script>
     <script src="plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="plugins/eModal/dist/eModal.min.js"></script>
+    <script src="plugins/ekko-lightbox/ekko-lightbox.min.js"></script>
     <script src="dist/js/adminlte.min.js"></script>
     <script defer src="dist/js/main.js"></script>
     <script defer>
@@ -260,11 +263,17 @@
                                 let response = '';
 
                                     for (let i in data) {
+                                        if (data[i].arquivo == true) {
+                                            data[i].arquivo = '<span class="bg bg-info"><a class="fas fa-paperclip a-view-arquivo" href="arquivoView.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Anexo(s)"></a></span>';
+                                        } else {
+                                            data[i].arquivo = '';
+                                        }
+
                                         response += '<tr><td>' + data[i].sistema + '</td>'
                                         + '<td>' + data[i].descricao + '</td>'
                                         + '<td><code>' + data[i].instrucao + '</code></td>'
                                         + '<td class="td-action">'
-                                        + '<span class="bg bg-info"><a class="fas fa-paperclip a-view-arquivo" href="arquivoView.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Anexo(s)"></a></span>'
+                                        + data[i].arquivo
                                         + '<span class="bg bg-warning"><a class="fas fa-pen a-edit-comando" href="comandoEdit.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Editar"></a></span>'
                                         + '<span class="bg bg-danger"><a class="fas fa-trash a-delete-comando" id="19514500024f9521bc15020a60e6ca5e-' + data[i].idcomando + '" href="#" title="Excluir"></a></span>'
                                         + '</td></tr>';
