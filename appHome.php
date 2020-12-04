@@ -169,9 +169,13 @@
                                 <textarea name="instrucao" id="instrucao" rows="3" class="form-control"
                                     placeholder="Instru&ccedil;&atilde;o" required></textarea>
                             </div>
-                            <div class="form-group">
+                            <!--<div class="form-group">
                                 <label for="anexo">Anexo</label>
                                 <input type="file" name="anexo[]" id="anexo" class="form-control" placeholder="Anexe arquivos ao conhecimento" multiple>
+                            </div>-->
+                            <div class="custom-file">
+                                <input type="file" name="anexo[]" id="anexo" class="custom-file-input">
+                                <label class="custom-file-label" for="anexo">Escolher arquivos</label>
                             </div>
                         </div>
                         <div class="modal-footer justify-content-between">

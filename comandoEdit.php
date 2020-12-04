@@ -151,9 +151,13 @@
             <textarea name="instrucao" id="instrucao_edit" rows="3" class="form-control"
                 placeholder="Instru&ccedil;&atilde;o" required><?php echo $row->instrucao; ?></textarea>
         </div>
-        <div class="form-group">
+        <!--<div class="form-group">
             <label for="anexo">Anexo</label>
             <input type="file" name="anexo[]" id="anexo_edit" class="form-control" placeholder="Anexe arquivos ao conhecimento" multiple>
+        </div>-->
+        <div class="custom-file">
+            <label class="custom-file-label" for="anexo">Escolher arquivos</label>
+            <input type="file" name="anexo[]" id="anexo_edit" class="custom-file-input">
         </div>
         <div class="anexo">
         <?php
