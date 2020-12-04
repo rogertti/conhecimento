@@ -28,21 +28,17 @@
         if (empty($_POST['idcomando'])) {
             die('Vari&aacute;vel de controle nula.');
         } else {
+            $filtro = 1;
             $comando->idcomando = $_POST['idcomando'];
+            $sistema->idcomando = $_POST['idcomando'];
         }
 
-        if (empty($_POST['sistema'])) {
-            die($msg);
-        } else {
-            $filtro = 1;
-            
-            if (is_numeric($_POST['sistema'])) {
-                $comando->idsistema = $_POST['sistema'];
-            } else {
-                $sistema->descricao = ucwords($_POST['sistema']);
-                $comando->idsistema = $sistema->insertSystemBefore();
-                #print_r($comando->idsistema); exit;
-            }
+        if (empty($_POST['sistema_selected_original'])) {
+            die('Vari&aacute;vel de controle nula.');
+        }
+
+        if (empty($_POST['sistema_selected'])) {
+            $_POST['sistema_selected'] = $_POST['sistema_selected_original'];
         }
 
         if (empty($_POST['descricao'])) {
@@ -72,11 +68,55 @@
         }
 
         if ($filtro == 3) {
-            if ($comando->update()) {
-                echo'true';
-            } else {
-                die(var_dump($db->errorInfo()));
-            }
+
+            // essa rotina apaga o vínculo entre o sistema e o comando, se o usuário assim tiver feito.
+
+            $sistema_selected_original = explode(',', $_POST['sistema_selected_original']);
+            $sistema_selected = explode(',', $_POST['sistema_selected']);
+            $sistemas_diff = array_diff($sistema_selected_original, $sistema_selected);
+            $sistemas_diff_count = count($sistemas_diff);
+            #echo $sistemas_diff_count; exit;
+
+                if ($sistemas_diff_count > 0) {
+                    foreach ($sistemas_diff as $sistema_diff => $idsistema_diff) {
+                        $sistema->idsistema = $idsistema_diff;
+
+                            if (!$sistema->unlink()) {
+                                die(var_dump($db->errorInfo()));
+                            }
+                    }
+                }
+
+            // essa rotina cria o vínculo entre o sistema e o comando, se o usuário assim tiver feito.
+
+            $sistemas_diff_reverse = array_diff($sistema_selected, $sistema_selected_original);
+            $sistemas_diff_reverse_count = count($sistemas_diff_reverse);
+            #echo $sistemas_diff_reverse_count; exit;
+
+                if ($sistemas_diff_reverse_count > 0) {
+                    foreach ($sistemas_diff_reverse as $sys) {
+                        if (is_numeric($sys)) {
+                            $array_sistemas[] = $sys;
+                        } else {
+                            $sistema->descricao = ucwords($sys);
+                            $array_sistemas[] = $sistema->insertSystemBefore();
+                        }
+                    }
+
+                    $comando->idsistema = $array_sistemas;
+                } else {
+                    /*if ($comando->update()) {
+                        echo'true';
+                    } else {
+                        die(var_dump($db->errorInfo()));
+                    }*/
+                }
+
+                if ($comando->update()) {
+                    echo'true';
+                } else {
+                    die(var_dump($db->errorInfo()));
+                }
         } else {
             die('Vari&aacute;vel de controle nula.');
         }

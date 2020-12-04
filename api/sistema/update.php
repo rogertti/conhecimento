@@ -2,7 +2,7 @@
     // include database and object files
 
     include_once '../config/database.php';
-    include_once '../objects/appinit.php';
+    include_once '../objects/sistema.php';
 
     // get database connection
 
@@ -11,7 +11,7 @@
 
     // prepare object
 
-    $appinit = new Appinit($db);
+    $sistema = new Sistema($db);
 
     // vars to control this script
 
@@ -22,29 +22,25 @@
         if (empty($_POST['rand'])) {
             die('Vari&aacute;vel de controle nula.');
         }
-        if (empty($_POST['idappinit'])) {
+
+        if (empty($_POST['idsistema'])) {
             die('Vari&aacute;vel de controle nula.');
         } else {
-            $appinit->idappinit = $_POST['idappinit'];
+            $sistema->idsistema = $_POST['idsistema'];
         }
-        if (empty($_POST['nome'])) {
+
+        if (empty($_POST['descricao'])) {
             die($msg);
         } else {
             $filtro = 1;
-            $_POST['nome'] = str_replace("'", "&#39;", $_POST['nome']);
-            $_POST['nome'] = str_replace('"', '&#34;', $_POST['nome']);
-            $_POST['nome'] = str_replace('%', '&#37;', $_POST['nome']);
-            $appinit->nome = $_POST['nome'];
+            $_POST['descricao'] = str_replace("'", "&#39;", $_POST['descricao']);
+            $_POST['descricao'] = str_replace('"', '&#34;', $_POST['descricao']);
+            $_POST['descricao'] = str_replace('%', '&#37;', $_POST['descricao']);
+            $sistema->descricao = $_POST['descricao'];
         }
-        if (empty($_POST['template'])) {
-            die($msg);
-        } else {
-            $filtro++;
-            $appinit->template = $_POST['template'];
-        }
-
-        if ($filtro == 4) {
-            if ($appinit->update()) {
+        
+        if ($filtro == 1) {
+            if ($sistema->update()) {
                 echo'true';
             } else {
                 die(var_dump($db->errorInfo()));
@@ -53,4 +49,4 @@
             die('Vari&aacute;vel de controle nula.');
         }
 
-    unset($database,$db,$appinit,$msg);
+    unset($database,$db,$sistema,$msg);

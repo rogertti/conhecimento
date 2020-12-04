@@ -88,9 +88,9 @@
                         <table class="table table-bordered table-hover table-data d-none">
                             <thead>
                                 <tr>
-                                    <th>Sistema</th>
                                     <th>Descri&ccedil;&atilde;o</th>
                                     <th>Instru&ccedil;&atilde;o</th>
+                                    <th style="max-width: 400px;width: 400px;">Sistema</th>
                                     <th style="max-width: 100px;width: 90px;"></th>
                                 </tr>
                             </thead>
@@ -98,9 +98,9 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th>Sistema</th>
                                     <th>Descri&ccedil;&atilde;o</th>
                                     <th>Instru&ccedil;&atilde;o</th>
+                                    <th style="max-width: 400px;width: 400px;">Sistema</th>
                                     <th style="max-width: 100px;width: 90px;"></th>
                                 </tr>
                             </tfoot>
@@ -140,12 +140,12 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="rand" id="rand" value="<?php echo md5(mt_rand()); ?>">
-                            <!--<input type="hidden" name="sistema_selected" id="sistema_selected">-->
+                            <input type="hidden" name="sistema_selected" id="sistema_selected">
 
                             <div class="form-group">
                                 <label for="sistema"><i class="fas fa-bell"></i> Sistema</label>
                                 <select name="sistema" id="sistema" class="form-control"
-                                    data-placeholder="Encontre ou informe o sistema destino" style="width: 100%;" required>
+                                    data-placeholder="Encontre ou informe o sistema destino" style="width: 100%;" multiple required>
                                 <?php
                                     $sql = $sistema->readAll();
 
@@ -201,6 +201,12 @@
             </div>
         </div>
 
+        <div class="modal fade" id="modal-edit-sistema">
+            <div class="modal-dialog">
+                <div class="modal-content"></div>
+            </div>
+        </div>
+
         <!-- /.modal -->
 
         <?php include_once 'appFootbar.php'; ?>
@@ -244,7 +250,7 @@
                     beforeSend: function(result) {
                         $('.div-load-page').removeClass('d-none').html(
                             '<p class="lead text-center"><i class="fas fa-cog fa-spin"></i></p>'
-                            );
+                        );
                     },
                     error: function(result) {
                         Swal.fire({
@@ -260,7 +266,15 @@
                             $('.blockquote-data').removeClass('d-none');
                         } else {
                             if (data[0].status == true) {
-                                let response = '';
+                                let response = '',
+                                    html_a = '',
+                                    html_b = '',
+                                    url_comando_edit = '',
+                                    url_sistema_edit = '',
+                                    sistema = '',
+                                    idcomando = '',
+                                    count = data.length,
+                                    x = 1;
 
                                     for (let i in data) {
                                         if (data[i].arquivo == true) {
@@ -268,15 +282,78 @@
                                         } else {
                                             data[i].arquivo = '';
                                         }
-
-                                        response += '<tr><td>' + data[i].sistema + '</td>'
+                                        
+                                        /*response += '<tr><td>' + data[i].sistema + '</td>'
                                         + '<td>' + data[i].descricao + '</td>'
                                         + '<td><code>' + data[i].instrucao + '</code></td>'
                                         + '<td class="td-action">'
                                         + data[i].arquivo
                                         + '<span class="bg bg-warning"><a class="fas fa-pen a-edit-comando" href="comandoEdit.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Editar"></a></span>'
                                         + '<span class="bg bg-danger"><a class="fas fa-trash a-delete-comando" id="19514500024f9521bc15020a60e6ca5e-' + data[i].idcomando + '" href="#" title="Excluir"></a></span>'
-                                        + '</td></tr>';
+                                        + '</td></tr>';*/
+
+                                        if (x == 1 && count == 1) {
+                                            html_a = '<tr><td>' + data[i].descricao + '</td>'
+                                            + '<td><code>' + data[i].instrucao + '</code></td><td>';
+
+                                            html_b = '</td><td class="td-action">'
+                                            + data[i].arquivo
+                                            + '<span class="bg bg-warning"><a class="fas fa-pen a-edit-comando" href="comandoEdit.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Editar conhecimento"></a></span>'
+                                            + '<span class="bg bg-danger"><a class="fas fa-trash a-delete-comando" id="19514500024f9521bc15020a60e6ca5e-' + data[i].idcomando + '" href="#" title="Excluir conhecimento"></a></span>'
+                                            + '</td></tr>';
+
+                                            sistema += '<span class="bg bg-light bg-data">' + data[i].sistema
+                                            + ' <a class="fas fa-pen a-edit-sistema" href="sistemaEdit.php?8a8c8c9ac7e898f1f23c607f3ada3211=' + data[i].idsistema + '" title="Editar sistema"></a>'
+                                            + ' <a class="fas fa-unlink a-unlink-sistema" id="8a8c8c9ac7e898f1f23c607f3ada3211-' + data[i].idsistema + '-' + data[i].idcomando + '" href="#" title="Desvincular sistema"></a></span>';
+                                        }
+                                        
+                                        if (x == 1 && count > 1) {
+                                            html_a = '<tr><td>' + data[i].descricao + '</td>'
+                                            + '<td><code>' + data[i].instrucao + '</code></td><td>';
+
+                                            html_b = '</td><td class="td-action">'
+                                            + data[i].arquivo
+                                            + '<span class="bg bg-warning"><a class="fas fa-pen a-edit-comando" href="comandoEdit.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Editar conhecimento"></a></span>'
+                                            + '<span class="bg bg-danger"><a class="fas fa-trash a-delete-comando" id="19514500024f9521bc15020a60e6ca5e-' + data[i].idcomando + '" href="#" title="Excluir conhecimento"></a></span>'
+                                            + '</td></tr>';
+
+                                            sistema += '<span class="bg bg-light bg-data">' + data[i].sistema
+                                            + ' <a class="fas fa-pen a-edit-sistema" href="sistemaEdit.php?8a8c8c9ac7e898f1f23c607f3ada3211=' + data[i].idsistema + '" title="Editar sistema"></a>'
+                                            + ' <a class="fas fa-unlink a-unlink-sistema" id="8a8c8c9ac7e898f1f23c607f3ada3211-' + data[i].idsistema + '-' + data[i].idcomando + '" href="#" title="Desvincular sistema"></a></span>';
+                                        } else {
+                                            if(idcomando == data[i].idcomando) {
+                                                if(x < count) {
+                                                    sistema += '<span class="bg bg-light bg-data">' + data[i].sistema
+                                                    + ' <a class="fas fa-pen a-edit-sistema" href="sistemaEdit.php?8a8c8c9ac7e898f1f23c607f3ada3211=' + data[i].idsistema + '" title="Editar sistema"></a>'
+                                                    + ' <a class="fas fa-unlink a-unlink-sistema" id="8a8c8c9ac7e898f1f23c607f3ada3211-' + data[i].idsistema + '-' + data[i].idcomando + '" href="#" title="Desvincular sistema"></a></span>';
+                                                } else {
+                                                    sistema += '<span class="bg bg-light bg-data">' + data[i].sistema
+                                                    + ' <a class="fas fa-pen a-edit-sistema" href="sistemaEdit.php?8a8c8c9ac7e898f1f23c607f3ada3211=' + data[i].idsistema + '" title="Editar sistema"></a>'
+                                                    + ' <a class="fas fa-unlink a-unlink-sistema" id="8a8c8c9ac7e898f1f23c607f3ada3211-' + data[i].idsistema + '-' + data[i].idcomando + '" href="#" title="Desvincular sistema"></a></span>';
+
+                                                    response += html_a + sistema + html_b;
+                                                }
+                                            } else {
+                                                response += html_a + sistema + html_b;
+                                                sistema = '';
+
+                                                html_a = '<tr><td>' + data[i].descricao + '</td>'
+                                                + '<td><code>' + data[i].instrucao + '</code></td><td>';
+
+                                                html_b = '</td><td class="td-action">'
+                                                + data[i].arquivo
+                                                + '<span class="bg bg-warning"><a class="fas fa-pen a-edit-comando" href="comandoEdit.php?19514500024f9521bc15020a60e6ca5e=' + data[i].idcomando + '" title="Editar conhecimento"></a></span>'
+                                                + '<span class="bg bg-danger"><a class="fas fa-trash a-delete-comando" id="19514500024f9521bc15020a60e6ca5e-' + data[i].idcomando + '" href="#" title="Excluir conhecimento"></a></span>'
+                                                + '</td></tr>';
+
+                                                sistema += '<span class="bg bg-light bg-data">' + data[i].sistema
+                                                + ' <a class="fas fa-pen a-edit-sistema" href="sistemaEdit.php?8a8c8c9ac7e898f1f23c607f3ada3211=' + data[i].idsistema + '" title="Editar sistema"></a>'
+                                                + ' <a class="fas fa-unlink a-unlink-sistema" id="8a8c8c9ac7e898f1f23c607f3ada3211-' + data[i].idsistema + '-' + data[i].idcomando + '" href="#" title="Desvincular sistema"></a></span>';
+                                            }
+                                        }
+
+                                        idcomando = data[i].idcomando;
+                                        x++;
                                     }
 
                                 $('.div-load-page').addClass('d-none');
@@ -331,6 +408,11 @@
                 $('#modal-edit-comando').modal('show').find('.modal-content').load($(this).attr('href'));
             });
 
+            $('.table-data').on('click', '.a-edit-sistema', function(e) {
+                e.preventDefault();
+                $('#modal-edit-sistema').modal('show').find('.modal-content').load($(this).attr('href'));
+            });
+
             /* SELECT MULTIPLE */
 
             $('#sistema').show(function() {
@@ -343,10 +425,10 @@
                     }
                 });
 
-                /*$('#sistema').change(function (e) {
+                $('#sistema').change(function (e) {
                     let obj = $('#sistema').select2('val');
-                    $('#sistema_select').attr('value', obj);
-                });*/
+                    $('#sistema_selected').attr('value', obj);
+                });
             });
 
             /* UPLOAD */
@@ -368,29 +450,6 @@
                 let formdata = new FormData(this);
                 formdata.append('anexo', filelist);
 
-                /*$.post('api/comando/insert.php', formdata, function(data) {
-                    $('.btn-new-comando').html('<img src="dist/img/rings.svg" class="loader-svg">').fadeTo(fade, 1);
-
-                    switch (data) {
-                        case 'true':
-                            Toast.fire({
-                                icon: 'success',
-                                title: 'Conhecimento compartilhado.'
-                            }).then((result) => {
-                                window.setTimeout("location.href='inicio'", delay);
-                            });
-                            break;
-
-                        default:
-                            Toast.fire({
-                                icon: 'error',
-                                title: data
-                            });
-                            break;
-                    }
-
-                    $('.btn-new-comando').html('Salvar').fadeTo(fade, 1);
-                });*/
                 $.ajax({
                     url: 'api/comando/insert.php',
                     type: 'POST',
@@ -426,6 +485,56 @@
                 });
 
                 return false;
+            });
+
+            /* UNLINK SISTEMA */
+
+            $('.table-data').on('click', '.a-unlink-sistema', function(e) {
+                e.preventDefault();
+
+                let click = this.id.split('-'),
+                    py = click[0],
+                    idsys = click[1],
+                    idcmd = click[2];
+
+                Swal.fire({
+                    icon: 'question',
+                    title: 'Excluir o Sitema',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Não',
+                }).then((result) => {
+                    if (result.value == true) {
+                        $.ajax({
+                            type: 'GET',
+                            url: 'api/sistema/unlink.php?' + py + '=' + idsys + ',' + idcmd,
+                            dataType: 'json',
+                            cache: false,
+                            /*beforeSend: function(result) {
+                                $('#search-result').empty().html(
+                                    '<p style="position: relative;top: 15px;" class="lead"><i class="fas fa-cog fa-spin"></i></p>'
+                                );
+                            },*/
+                            error: function(result) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    html: result.responseText,
+                                    showConfirmButton: false
+                                });
+                            },
+                            success: function(data) {
+                                if (data == true) {
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Sistema desvinculado.'
+                                    }).then((result) => {
+                                        window.setTimeout("location.href='inicio'", delay);
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
             });
 
             /* DELETE CONHECIMENTO */

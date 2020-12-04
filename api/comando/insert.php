@@ -24,18 +24,29 @@
             die('Vari&aacute;vel de controle nula.');
         }
 
-        if (empty($_POST['sistema'])) {
+        if (empty($_POST['sistema_selected'])) {
             die($msg);
         } else {
             $filtro = 1;
-            
-            if (is_numeric($_POST['sistema'])) {
-                $comando->idsistema = $_POST['sistema'];
-            } else {
-                $sistema->descricao = ucwords($_POST['sistema']);
-                $comando->idsistema = $sistema->insertSystemBefore();
-                #print_r($comando->idsistema); exit;
-            }
+            $sistemas = explode(',', $_POST['sistema_selected']);
+
+                foreach($sistemas as $sys) {
+                    if (is_numeric($sys)) {
+                        $array_sistemas[] = $sys;
+                    } else {
+                        $sistema->descricao = ucwords($sys);
+                        $array_sistemas[] = $sistema->insertSystemBefore();
+                    }
+                }
+
+            $comando->idsistema = $array_sistemas;
+                       
+                /*if (is_numeric($_POST['sistema'])) {
+                    $comando->idsistema = $_POST['sistema'];
+                } else {
+                    $sistema->descricao = ucwords($_POST['sistema']);
+                    $comando->idsistema = $sistema->insertSystemBefore();
+                }*/
         }
         
         if (empty($_POST['descricao'])) {

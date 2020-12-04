@@ -35,6 +35,7 @@
                             $comando_item = array(
                                 'status' => true,
                                 'idcomando' => $idcomando,
+                                'idsistema' => $idsistema,
                                 'sistema' => $sistema,
                                 'descricao' => $descricao,
                                 'instrucao' => $instrucao,
@@ -44,6 +45,7 @@
                             $comando_item = array(
                                 'status' => true,
                                 'idcomando' => $idcomando,
+                                'idsistema' => $idsistema,
                                 'sistema' => $sistema,
                                 'descricao' => $descricao,
                                 'instrucao' => $instrucao,

@@ -8,6 +8,7 @@
         // object properties
 
         public $idsistema;
+        public $idcomando;
         public $descricao;
         public $monitor;
      
@@ -25,6 +26,20 @@
             $this->monitor = 'T';
 
             $sql = $this->conn->prepare("SELECT idsistema,descricao AS sistema FROM sistema WHERE monitor = :monitor ORDER BY descricao");
+            $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
+            $sql->execute();
+
+            return $sql;
+        }
+
+        // read record
+
+        public function readSingle($idsistema)
+        {
+            $this->monitor = 'T';
+
+            $sql = $this->conn->prepare("SELECT idsistema,descricao FROM sistema WHERE idsistema = :idsistema AND monitor = :monitor ORDER BY descricao");
+            $sql->bindParam(':idsistema', $idsistema, PDO::PARAM_INT);
             $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
             $sql->execute();
 
@@ -129,6 +144,18 @@
             $sql = $this->conn->prepare("UPDATE sistema SET monitor = :monitor WHERE idsistema = :idsistema");
             $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
             $sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
+            $sql->execute();
+
+            return $sql;
+        }
+
+        // unlink record
+
+        public function unlink()
+        {
+            $sql = $this->conn->prepare("DELETE FROM sistema_has_comando WHERE sistema_idsistema = :idsistema AND comando_idcomando = :idcomando");
+            $sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
+            $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
             $sql->execute();
 
             return $sql;

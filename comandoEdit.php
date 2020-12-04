@@ -82,6 +82,22 @@
 
     $py_idcomando = md5('idcomando');
 
+    // read all records from secondary request for primary request
+
+    $sql = $comando->readLinkedSystem($_GET[''.$py_idcomando.'']);
+
+        if($sql->rowCount() > 0) {
+            $row = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $syslinked_array = array_column($row, 'idsistema');
+            $syslinked = implode(',', $syslinked_array);
+        } else {
+            $syslinked = '';
+        }
+
+    $sql->closeCursor();
+
+    // read data from primary request
+
     $sql = $comando->readSingle($_GET[''.$py_idcomando.'']);
 
         if ($sql->rowCount() > 0) {
@@ -103,17 +119,19 @@
     <div class="modal-body">
         <input type="hidden" name="rand" id="rand_edit" value="<?php echo md5(mt_rand()); ?>">
         <input type="hidden" name="idcomando" id="idcomando" value="<?php echo $_GET[''.$py_idcomando.'']; ?>">
+        <input type="hidden" name="sistema_selected_original" id="sistema_selected_original" value="<?php echo $syslinked; ?>">
+        <input type="hidden" name="sistema_selected" id="sistema_selected_edit">
 
         <div class="form-group">
             <label for="sistema"><i class="fas fa-bell"></i> Sistema</label>
             <select name="sistema" id="sistema_edit" class="form-control"
-                data-placeholder="Encontre ou informe o sistema destino" style="width: 100%;" required>
+                data-placeholder="Encontre ou informe o sistema destino" style="width: 100%;" multiple required>
             <?php
                 $sql2 = $sistema->readAll();
 
-                    if ($sql2->rowCount() > 0) {
+                    if($sql2->rowCount() > 0) {
                         while ($row2 = $sql2->fetch(PDO::FETCH_OBJ)) {
-                            if ($row2->idsistema == $row->idsistema) {
+                            if (strstr($syslinked, $row2->idsistema)) {
                                 echo'<option value="'.$row2->idsistema.'" selected>'.$row2->sistema.'</option>';
                             } else {
                                 echo'<option value="'.$row2->idsistema.'">'.$row2->sistema.'</option>';
@@ -231,6 +249,11 @@
                     }
                 }
             });
+
+            $('#sistema_edit').change(function (e) {
+                let obj = $('#sistema_edit').select2('val');
+                $('#sistema_selected_edit').attr('value', obj);
+            });
         });
 
         /* UPLOAD */
@@ -261,7 +284,7 @@
             });
         });
 
-        /* NOVO CONHECIMENTO */
+        /* EDITAR CONHECIMENTO */
 
         $('.form-edit-comando').submit(function(e) {
             e.preventDefault();

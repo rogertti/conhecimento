@@ -26,7 +26,8 @@
         {
             $this->monitor = 'T';
 
-            $sql = $this->conn->prepare("SELECT comando.idcomando,sistema.descricao AS sistema,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema ON comando.sistema_idsistema = sistema.idsistema WHERE comando.monitor = :monitor ORDER BY sistema.descricao,comando.descricao,comando.instrucao");
+            #$sql = $this->conn->prepare("SELECT comando.idcomando,sistema.descricao AS sistema,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema ON comando.sistema_idsistema = sistema.idsistema WHERE comando.monitor = :monitor ORDER BY sistema.descricao,comando.descricao,comando.instrucao");
+            $sql = $this->conn->prepare("SELECT comando.idcomando,sistema.idsistema,sistema.descricao AS sistema,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema_has_comando ON sistema_has_comando.comando_idcomando = comando.idcomando INNER JOIN sistema ON sistema.idsistema = sistema_has_comando.sistema_idsistema WHERE comando.monitor = :monitor AND sistema.monitor = :monitor ORDER BY comando.idcomando,sistema.idsistema,sistema.descricao,comando.descricao,comando.instrucao");
             $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
             $sql->execute();
                 
@@ -39,7 +40,23 @@
         {
             $this->monitor = 'T';
 
-            $sql = $this->conn->prepare("SELECT comando.idcomando,sistema.idsistema,sistema.descricao AS sistema,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema ON comando.sistema_idsistema = sistema.idsistema WHERE comando.idcomando = :idcomando AND comando.monitor = :monitor ORDER BY sistema.descricao,comando.descricao,comando.instrucao");
+            #$sql = $this->conn->prepare("SELECT comando.idcomando,sistema.idsistema,sistema.descricao AS sistema,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema ON comando.sistema_idsistema = sistema.idsistema WHERE comando.idcomando = :idcomando AND comando.monitor = :monitor ORDER BY sistema.descricao,comando.descricao,comando.instrucao");
+            #$sql = $this->conn->prepare("SELECT comando.idcomando,comando.descricao,comando.instrucao FROM comando INNER JOIN sistema_has_comando ON sistema_has_comando.comando_idcomando = comando.idcomando INNER JOIN sistema ON sistema.idsistema = sistema_has_comando.sistema_idsistema WHERE comando.idcomando = :idcomando AND comando.monitor = :monitor ORDER BY sistema.descricao,comando.descricao,comando.instrucao");
+            $sql = $this->conn->prepare("SELECT idcomando,descricao,instrucao FROM comando WHERE comando.idcomando = :idcomando AND comando.monitor = :monitor ORDER BY descricao,instrucao");
+            $sql->bindParam(':idcomando', $idcomando, PDO::PARAM_INT);
+            $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
+            $sql->execute();
+
+            return $sql;
+        }
+
+        // read records linked
+
+        public function readLinkedSystem($idcomando)
+        {
+            $this->monitor = 'T';
+
+            $sql = $this->conn->prepare("SELECT sistema.idsistema,sistema.descricao FROM sistema INNER JOIN sistema_has_comando ON sistema_has_comando.sistema_idsistema = sistema.idsistema INNER JOIN comando ON comando.idcomando = sistema_has_comando.comando_idcomando WHERE comando.idcomando = :idcomando AND sistema.monitor = :monitor ORDER BY sistema.descricao");
             $sql->bindParam(':idcomando', $idcomando, PDO::PARAM_INT);
             $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
             $sql->execute();
@@ -51,8 +68,9 @@
 
         public function comandoInsertExist()
         {
-            $sql = $this->conn->prepare("SELECT idcomando FROM comando WHERE sistema_idsistema = :idsistema AND descricao = :descricao");
-            $sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
+            #$sql = $this->conn->prepare("SELECT idcomando FROM comando WHERE sistema_idsistema = :idsistema AND descricao = :descricao");
+            $sql = $this->conn->prepare("SELECT idcomando FROM comando WHERE descricao = :descricao");
+            #$sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
             $sql->bindParam(':descricao', $this->descricao, PDO::PARAM_STR);
             $sql->execute();
 
@@ -69,8 +87,9 @@
 
         public function comandoUpdateExist()
         {
-            $sql = $this->conn->prepare("SELECT idcomando FROM comando WHERE sistema_idsistema = :idsistema AND descricao = :descricao AND idcomando <> :idcomando");
-            $sql->bindParam(':idsistema', $this->idistema, PDO::PARAM_INT);
+            #$sql = $this->conn->prepare("SELECT idcomando FROM comando WHERE sistema_idsistema = :idsistema AND descricao = :descricao AND idcomando <> :idcomando");
+            $sql = $this->conn->prepare("SELECT idcomando FROM comando WHERE descricao = :descricao AND idcomando <> :idcomando");
+            #$sql->bindParam(':idsistema', $this->idistema, PDO::PARAM_INT);
             $sql->bindParam(':descricao', $this->descricao, PDO::PARAM_STR);
             $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
             $sql->execute();
@@ -93,14 +112,59 @@
             } else {
                 $this->monitor = 'T';
 
-                $sql = $this->conn->prepare("INSERT INTO comando (sistema_idsistema,descricao,instrucao,monitor) VALUES (:idsistema,:descricao,:instrucao,:monitor)");
-                $sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
+                $sql = $this->conn->prepare("INSERT INTO comando (descricao,instrucao,monitor) VALUES (:descricao,:instrucao,:monitor)");
                 $sql->bindParam(':descricao', $this->descricao, PDO::PARAM_STR);
                 $sql->bindParam(':instrucao', $this->instrucao, PDO::PARAM_STR);
                 $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
                 #$sql->execute();
                     if ($sql->execute()) {
                         $this->idcomando = $this->conn->lastInsertId();
+
+                            // associando o ID de comando com os ID's de sistema
+
+                            foreach($this->idsistema as $idsys) {
+                                $sql = $this->conn->prepare("INSERT INTO sistema_has_comando (sistema_idsistema,comando_idcomando) VALUES (:idsistema,:idcomando)");
+                                $sql->bindParam(':idsistema', $idsys, PDO::PARAM_INT);
+                                $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
+                                $sql->execute();
+                            }
+
+                            if ($this->anexo) {
+                                if (self::upload()) {
+                                    return $sql;
+                                }
+                            } else {
+                                return $sql;
+                            }
+                    }
+                #return $sql;
+            }
+        }
+
+        // update record
+
+        public function update()
+        {
+            if ($this->comandoUpdateExist()) {
+                die('Esse comando j&aacute; est&aacute; cadastrado.');
+            } else {
+                $sql = $this->conn->prepare("UPDATE comando SET descricao = :descricao,instrucao = :instrucao WHERE idcomando = :idcomando");
+                #$sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
+                $sql->bindParam(':descricao', $this->descricao, PDO::PARAM_STR);
+                $sql->bindParam(':instrucao', $this->instrucao, PDO::PARAM_STR);
+                $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
+                #$sql->execute();
+                    if ($sql->execute()) {
+                        // associando o ID de comando com os ID's de sistema
+                        
+                        if (!empty($this->idsistema)) {
+                            foreach ($this->idsistema as $idsys) {
+                                $sql = $this->conn->prepare("INSERT INTO sistema_has_comando (sistema_idsistema,comando_idcomando) VALUES (:idsistema,:idcomando)");
+                                $sql->bindParam(':idsistema', $idsys, PDO::PARAM_INT);
+                                $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
+                                $sql->execute();
+                            }
+                        }
 
                         if ($this->anexo) {
                             if (self::upload()) {
@@ -112,6 +176,20 @@
                     }
                 #return $sql;
             }
+        }
+
+        // delete record
+
+        public function delete()
+        {
+            $this->monitor = 'F';
+
+            $sql = $this->conn->prepare("UPDATE comando SET monitor = :monitor WHERE idcomando = :idcomando");
+            $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
+            $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
+            $sql->execute();
+                
+            return $sql;
         }
 
         // upload files
@@ -275,45 +353,5 @@
             
             imagedestroy($img_origem);
             imagedestroy($img_final);*/
-        }
-
-        // update record
-
-        public function update()
-        {
-            if ($this->comandoUpdateExist()) {
-                die('Esse comando j&aacute; est&aacute; cadastrado.');
-            } else {
-                $sql = $this->conn->prepare("UPDATE comando SET sistema_idsistema = :idsistema,descricao = :descricao,instrucao = :instrucao WHERE idcomando = :idcomando");
-                $sql->bindParam(':idsistema', $this->idsistema, PDO::PARAM_INT);
-                $sql->bindParam(':descricao', $this->descricao, PDO::PARAM_STR);
-                $sql->bindParam(':instrucao', $this->instrucao, PDO::PARAM_STR);
-                $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
-                #$sql->execute();
-                    if ($sql->execute()) {
-                        if ($this->anexo) {
-                            if (self::upload()) {
-                                return $sql;
-                            }
-                        } else {
-                            return $sql;
-                        }
-                    }
-                #return $sql;
-            }
-        }
-
-        // delete record
-
-        public function delete()
-        {
-            $this->monitor = 'F';
-
-            $sql = $this->conn->prepare("UPDATE comando SET monitor = :monitor WHERE idcomando = :idcomando");
-            $sql->bindParam(':monitor', $this->monitor, PDO::PARAM_STR);
-            $sql->bindParam(':idcomando', $this->idcomando, PDO::PARAM_INT);
-            $sql->execute();
-                
-            return $sql;
         }
     }
